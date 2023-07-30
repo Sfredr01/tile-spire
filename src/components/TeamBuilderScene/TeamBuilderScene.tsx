@@ -8,7 +8,8 @@ import { generateRandomVariant } from "../../utils/generateRandomFighterVariant"
 export const TeamBuilderScene = () => {
   const teamMaxAmount = 3;
 
-  const { setContext } = useContext(GameContext);
+  const { context, setContext } = useContext(GameContext);
+  const [currentSeed, setCurrentSeed] = useState(context.mapSeed);
   const [currentTeamSelection, setCurrentTeamSelection] = useState<Fighter[]>(
     []
   );
@@ -37,8 +38,13 @@ export const TeamBuilderScene = () => {
   const confirmTeam = () => {
     setContext((currentContext) => ({
       ...currentContext,
+      mapSeed: currentSeed,
       playerTeam: currentTeamSelection,
     }));
+  };
+
+  const changeSeed = (e: React.FormEvent<HTMLInputElement>) => {
+    setCurrentSeed(e.currentTarget.value);
   };
 
   return (
@@ -83,6 +89,9 @@ export const TeamBuilderScene = () => {
           >
             Confirm Selection
           </div>
+        </div>
+        <div className="seed-container">
+          <input type="text" value={currentSeed} onChange={changeSeed} />
         </div>
       </div>
     </div>

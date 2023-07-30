@@ -59,3 +59,9 @@
 .slot.option:hover {
   background-color: lightcoral;
 }
+
+.seed-container {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}

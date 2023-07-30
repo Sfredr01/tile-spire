@@ -3,9 +3,53 @@ import "./grid-exploration-scene.style.css";
 import { GameContext } from "../../App";
 import { ClassNameEnum } from "../../enums/ClassNameEnum";
 import { generateRandomVariant } from "../../utils/generateRandomFighterVariant";
+import seedrandom from "seedrandom";
+
+type StageType = "fog" | "eligible" | "active";
+
+// Generate a 2D array of noise values
+function generateNoiseMap(
+  width: number,
+  height: number,
+  seed: string
+): number[][] {
+  const rng = seedrandom(seed);
+  const noiseMap: number[][] = [];
+
+  for (let y = 0; y < height; y++) {
+    noiseMap[y] = [];
+    for (let x = 0; x < width; x++) {
+      noiseMap[y][x] = rng();
+    }
+  }
+
+  return noiseMap;
+}
+
+// Map noise values to stage types
+function mapNoiseToStages(
+  noiseMap: number[][],
+  threshold: number
+): StageType[][] {
+  const stageMap: StageType[][] = [];
+
+  for (let y = 0; y < noiseMap.length; y++) {
+    stageMap[y] = [];
+    for (let x = 0; x < noiseMap[y].length; x++) {
+      const noiseValue = noiseMap[y][x];
+      if (noiseValue < threshold) {
+        stageMap[y][x] = "eligible";
+      } else {
+        stageMap[y][x] = "fog";
+      }
+    }
+  }
+
+  return stageMap;
+}
 
 export const GridExplorationScene = () => {
-  const { setContext } = useContext(GameContext);
+  const { context, setContext } = useContext(GameContext);
 
   const initBattle = () => {
     const enemyTeam = [
@@ -38,76 +82,50 @@ export const GridExplorationScene = () => {
     }));
   };
 
+  // Generate the procedurally generated map HTML
+  function generateMapElements(stageMap: StageType[][]): JSX.Element[][] {
+    const mapElements: JSX.Element[][] = [];
+
+    for (let y = 0; y < stageMap.length; y++) {
+      mapElements[y] = [];
+      for (let x = 0; x < stageMap[y].length; x++) {
+        const stageType = stageMap[y][x];
+        const onClickHandler = stageType === "eligible" ? initBattle : () => {};
+
+        mapElements[y][x] = (
+          <div
+            className="explore-stage"
+            data-stage-type={stageType}
+            onClick={onClickHandler}
+          />
+        );
+      }
+    }
+
+    return mapElements;
+  }
+
+  function generateProceduralMap(
+    width: number,
+    height: number,
+    seed: string,
+    threshold: number
+  ): JSX.Element[][] {
+    const noiseMap = generateNoiseMap(width, height, seed);
+    const stageMap = mapNoiseToStages(noiseMap, threshold);
+    return generateMapElements(stageMap);
+  }
+
+  const mapElements = generateProceduralMap(5, 5, context.mapSeed, 0.6);
+
   return (
     <div className="explore-window">
       <div className="explore-area-container">
-        <div className="explore-area-row">
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-        </div>
-        <div className="explore-area-row">
-          <div className="explore-stage" data-stage-type="fog" />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div className="explore-stage" data-stage-type="fog" />
-        </div>
-        <div className="explore-area-row">
-          <div className="explore-stage" data-stage-type="fog" />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div className="explore-stage" data-stage-type="active" />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div className="explore-stage" data-stage-type="fog" />
-        </div>
-        <div className="explore-area-row">
-          <div className="explore-stage" data-stage-type="fog" />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div
-            className="explore-stage"
-            data-stage-type="eligible"
-            onClick={initBattle}
-          />
-          <div className="explore-stage" data-stage-type="fog" />
-        </div>
-        <div className="explore-area-row">
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-          <div className="explore-stage" data-stage-type="fog" />
-        </div>
+        {mapElements.map((rowElements, rowIndex) => (
+          <div key={rowIndex} className="explore-area-row">
+            {rowElements}
+          </div>
+        ))}
       </div>
     </div>
   );

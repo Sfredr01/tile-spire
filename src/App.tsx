@@ -9,6 +9,7 @@ export interface Context {
   playerTeam: Fighter[];
   enemyTeam: Fighter[];
   actionsSubmitted: ActionDelta[];
+  mapSeed: string;
 }
 
 const defaultContext = {
@@ -16,6 +17,7 @@ const defaultContext = {
     playerTeam: [],
     enemyTeam: [],
     actionsSubmitted: [],
+    mapSeed: "this-is-a-seed",
   },
   setContext: () => {},
 };
