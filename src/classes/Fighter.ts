@@ -92,5 +92,20 @@ export class Fighter {
     console.log("Nothing happens...");
   }
 
-  private applyExperience(action: ActionDelta) {}
+  private applyExperience(action: ActionDelta) {
+    console.log("applyExperience", { fighter: this, action });
+    const totalCurrentExperience = this.currentExperience + action.amount;
+    if (totalCurrentExperience >= this.maxExperience) {
+      this.level += 1;
+      this.maxExperience *= 1.25;
+      this.currentExperience = 0;
+
+      this.applyExperience({
+        ...action,
+        amount: totalCurrentExperience - this.maxExperience,
+      });
+    } else {
+      this.currentExperience += action.amount;
+    }
+  }
 }

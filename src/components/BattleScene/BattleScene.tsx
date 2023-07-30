@@ -1,11 +1,12 @@
 import { useContext, useEffect } from "react";
 import { BattleModal } from "../BattleModal/BattleModal";
 import "./battle-scene.style.css";
-import { GameContext } from "../../App";
+import { Context, GameContext } from "../../App";
 import { Fighter } from "../../classes/Fighter";
 import { TargetEnum } from "../../enums/TargetEnum";
 import { clockWiseSwap } from "../../utils/clockwiseSwap";
 import { EffectEnum } from "../../enums/EffectEnum";
+import { ActionDelta } from "../../types/ActionDelta";
 
 const InfoHeader = ({
   maxHP,
@@ -31,6 +32,7 @@ const InfoHeader = ({
       <div>{className}</div>
       <div className="health-container">
         <div className="health-bar" style={{ width: `${healthPercentage}%` }} />
+        <div className="health-text">{healthPercentage}%</div>
       </div>
       <div>
         <div className="level-container">
@@ -67,6 +69,31 @@ const FighterComponent = ({ fighter }: { fighter: Fighter }) => {
   );
 };
 
+interface CurrentApplicationData {
+  currentTeamBeingTargetted: "playerTeam" | "enemyTeam";
+  currentTargetFighter: Fighter;
+  currentOriginTeam: "playerTeam" | "enemyTeam";
+  currentOriginFighter: Fighter;
+}
+
+const getCurrentActionApplicationData = (
+  context: Context,
+  currentAction: ActionDelta
+): CurrentApplicationData => {
+  const currentTeamBeingTargeted =
+    currentAction.target === TargetEnum.PLAYER ? "playerTeam" : "enemyTeam";
+
+  const currentOriginTeam =
+    currentAction.origin === TargetEnum.PLAYER ? "playerTeam" : "enemyTeam";
+
+  return {
+    currentTeamBeingTargetted: currentTeamBeingTargeted,
+    currentTargetFighter: context[currentTeamBeingTargeted][1],
+    currentOriginTeam: currentOriginTeam,
+    currentOriginFighter: context[currentOriginTeam][1],
+  };
+};
+
 export const BattleScene = () => {
   const { context, setContext } = useContext(GameContext);
 
@@ -80,20 +107,14 @@ export const BattleScene = () => {
       const currentAction = modifiedListOfActions.pop();
 
       if (currentAction) {
-        const currentTeamBeingTargeted =
-          currentAction.target === TargetEnum.PLAYER
-            ? "playerTeam"
-            : "enemyTeam";
-
-        const currentOriginTeam =
-          currentAction.origin === TargetEnum.PLAYER
-            ? "playerTeam"
-            : "enemyTeam";
-
-        const currentOriginFighter = context[currentOriginTeam][1];
+        const {
+          currentTeamBeingTargetted,
+          currentTargetFighter,
+          currentOriginTeam,
+          currentOriginFighter,
+        } = getCurrentActionApplicationData(context, currentAction);
 
         if (currentOriginFighter.isDead) {
-          alert("actioning fighter is dead!");
           const newTeam = clockWiseSwap(context[currentOriginTeam]);
 
           setContext((currentContext) => ({
@@ -105,11 +126,24 @@ export const BattleScene = () => {
         }
 
         // Apply action to active target
-        context[currentTeamBeingTargeted][1].applyAction(currentAction);
+        currentTargetFighter.applyAction(currentAction);
+
+        if (currentTargetFighter.isDead) {
+          const newTeam = clockWiseSwap(context[currentTeamBeingTargetted]);
+
+          if (newTeam.some((fighter) => !fighter.isDead)) {
+            setContext((currentContext) => ({
+              ...currentContext,
+              [currentTeamBeingTargetted]: newTeam,
+              actionsSubmitted: modifiedListOfActions,
+            }));
+            return;
+          }
+        }
 
         // Basic Enemy behavior, If player does anything, enemy attack
         if (currentAction.origin === TargetEnum.PLAYER && context.enemyTeam) {
-          const enemyAction = context.enemyTeam[1].moves[0].execute({
+          const enemyAction = currentTargetFighter.moves[0].execute({
             target: TargetEnum.PLAYER,
             origin: TargetEnum.ENEMY,
           });
@@ -127,17 +161,36 @@ export const BattleScene = () => {
             enemyTeam: [], // Clear Enemy Team
             playerTeam: currentContext.playerTeam.map((fighter) => {
               // Heal Player Team
-              const { updatedFighter } = fighter.applyAction({
-                name: "RESET",
-                effect: EffectEnum.HEALTH,
-                amount: fighter.maxHP,
-                origin: TargetEnum.PLAYER,
-                target: TargetEnum.PLAYER,
-              });
+              const { updatedFighter: fullyHealedFighter } =
+                fighter.applyAction({
+                  name: "RESET",
+                  effect: EffectEnum.HEALTH,
+                  amount: fighter.maxHP,
+                  origin: TargetEnum.PLAYER,
+                  target: TargetEnum.PLAYER,
+                });
 
-              return updatedFighter;
+              const experienceCalculated =
+                currentContext.enemyTeam.reduce((prev, curr) => {
+                  const levelDifference = curr.level / fighter.level;
+
+                  return prev + levelDifference;
+                }, 0) *
+                (fighter.maxExperience / 3);
+
+              const { updatedFighter: experiencedFighter } =
+                fullyHealedFighter.applyAction({
+                  name: "BATTLE_EXPERIENCE",
+                  effect: EffectEnum.EXPERIENCE,
+                  amount: experienceCalculated,
+                  origin: TargetEnum.PLAYER,
+                  target: TargetEnum.PLAYER,
+                });
+
+              return experiencedFighter;
             }),
           }));
+
           return;
         }
 

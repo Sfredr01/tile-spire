@@ -1,14 +1,11 @@
 import React, { createContext, useEffect, useState } from "react";
 import { BattleScene } from "./components/BattleScene/BattleScene";
 import { Fighter } from "./classes/Fighter";
-import { definedMoves } from "./static/DefinedMoves";
 import { ActionDelta } from "./types/ActionDelta";
 import { GridExplorationScene } from "./components/GridExplorationScene/GridExplorationScene";
-import { Move } from "./classes/Move";
-import { EffectEnum } from "./enums/EffectEnum";
 import { TeamBuilderScene } from "./components/TeamBuilderScene/TeamBuilderScene";
 
-interface Context {
+export interface Context {
   playerTeam: Fighter[];
   enemyTeam: Fighter[];
   actionsSubmitted: ActionDelta[];
@@ -16,32 +13,7 @@ interface Context {
 
 const defaultContext = {
   context: {
-    playerTeam: [
-      // new Fighter({
-      //   currentHP: 100,
-      //   maxHP: 100,
-      //   moves: [definedMoves.PUNCH],
-      //   level: 1,
-      // }),
-      // new Fighter({
-      //   currentHP: 100,
-      //   maxHP: 100,
-      //   moves: [
-      //     new Move({
-      //       name: "Divine Punishment",
-      //       amount: 100,
-      //       effect: EffectEnum.DAMAGE,
-      //     }),
-      //   ],
-      //   level: 1,
-      // }),
-      // new Fighter({
-      //   currentHP: 100,
-      //   maxHP: 100,
-      //   moves: [definedMoves.PUNCH],
-      //   level: 1,
-      // }),
-    ],
+    playerTeam: [],
     enemyTeam: [],
     actionsSubmitted: [],
   },

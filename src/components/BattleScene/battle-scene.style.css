@@ -22,6 +22,19 @@
   background-color: greenyellow;
 }
 
+.health-text {
+  position: absolute;
+  top: 0;
+  display: none;
+}
+
+.health-container:hover {
+  .health-text {
+    display: block;
+    font-size: 10px;
+  }
+}
+
 .level-container {
   position: absolute;
   left: -25%;
