@@ -1,0 +1,61 @@
+.team-builder-window {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  width: 960px;
+  height: 640px;
+  background-color: grey;
+  overflow: hidden;
+}
+
+.display-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 500px;
+}
+
+.fighter-options-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.fighter-option {
+  width: 300px;
+  height: 100px;
+  border-radius: 20px;
+  background-color: aliceblue;
+}
+
+.slot-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.slot-container-text {
+  white-space: nowrap;
+  position: absolute;
+  top: 10px;
+}
+
+.slot {
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 20px;
+  background-color: aliceblue;
+}
+
+.slot:hover {
+  background-color: lightgreen;
+}
+
+.slot.option:hover {
+  background-color: lightcoral;
+}

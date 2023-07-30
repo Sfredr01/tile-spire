@@ -1,0 +1,95 @@
+.battle-window {
+  position: relative;
+  width: 960px;
+  height: 640px;
+  background-color: aquamarine;
+}
+
+.health-container {
+  position: absolute;
+  left: -25%;
+  top: -30px;
+  height: 10px;
+  width: 100px;
+  background-color: ghostwhite;
+  border: 1px solid black;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.health-bar {
+  height: 100%;
+  background-color: greenyellow;
+}
+
+.level-container {
+  position: absolute;
+  left: -25%;
+  top: -18px;
+  height: 10px;
+  width: 100px;
+  background-color: ghostwhite;
+  border: 1px solid black;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.experience-bar {
+  height: 100%;
+  background-color: lightblue;
+}
+
+.level-text {
+  position: absolute;
+  top: 0;
+  display: none;
+}
+
+.level-container:hover {
+  .level-text {
+    display: block;
+    font-size: 10px;
+  }
+}
+
+.fighter-stage {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 30px;
+}
+
+.fight-area {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  padding: 60px;
+  width: 400px;
+}
+
+.fight-area.player {
+  position: absolute;
+  bottom: 0;
+}
+
+.fight-area.player > .fighter-stage {
+  background-color: burlywood;
+}
+
+/* Active Player Stage */
+.fight-area.player > .fighter-stage:nth-child(2) {
+  margin-top: -70px;
+}
+
+.fight-area.enemy {
+  position: absolute;
+  right: 0;
+}
+
+.fight-area.enemy > .fighter-stage {
+  background-color: brown;
+}
+
+.fight-area.enemy > .fighter-stage:nth-child(2) {
+  margin-top: 70px;
+}

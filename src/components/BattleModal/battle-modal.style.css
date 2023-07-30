@@ -1,0 +1,24 @@
+.battle-modal-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  height: 200px;
+  width: 350px;
+  margin: 30px;
+  background-color: antiquewhite;
+  padding: 10px;
+}
+
+.block-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 90px;
+  width: 170px;
+  background-color: white;
+  border-radius: 30px;
+}
