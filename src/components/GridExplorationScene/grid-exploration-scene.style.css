@@ -32,6 +32,14 @@
   background: blueviolet;
 }
 
+.explore-stage[data-stage-type="store"] {
+  background: coral;
+}
+
+.explore-stage[data-stage-type="active"] {
+  background: blueviolet;
+}
+
 .explore-stage[data-stage-type="fog"] {
   background: rgb(67, 67, 67);
   -webkit-box-shadow: 10px 10px 150px 68px rgba(0, 0, 0, 0.78);

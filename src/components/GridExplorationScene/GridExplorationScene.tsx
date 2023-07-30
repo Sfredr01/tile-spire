@@ -5,7 +5,7 @@ import { ClassNameEnum } from "../../enums/ClassNameEnum";
 import { generateRandomVariant } from "../../utils/generateRandomFighterVariant";
 import seedrandom from "seedrandom";
 
-type StageType = "fog" | "eligible" | "active";
+type StageType = "fog" | "eligible" | "active" | "store";
 
 // Generate a 2D array of noise values
 function generateNoiseMap(
@@ -38,6 +38,8 @@ function mapNoiseToStages(
     for (let x = 0; x < noiseMap[y].length; x++) {
       const noiseValue = noiseMap[y][x];
       if (noiseValue < threshold) {
+        // TODO: Implement store
+        // stageMap[y][x] = noiseValue < threshold * 0.2 ? "store" : "eligible";
         stageMap[y][x] = "eligible";
       } else {
         stageMap[y][x] = "fog";
@@ -94,6 +96,7 @@ export const GridExplorationScene = () => {
 
         mapElements[y][x] = (
           <div
+            key={`position_${y}_${x}`}
             className="explore-stage"
             data-stage-type={stageType}
             onClick={onClickHandler}
@@ -116,13 +119,21 @@ export const GridExplorationScene = () => {
     return generateMapElements(stageMap);
   }
 
-  const mapElements = generateProceduralMap(5, 5, context.mapSeed, 0.6);
+  const mapSize = 5;
+  const threshold = 0.6;
+
+  const mapElements = generateProceduralMap(
+    mapSize,
+    mapSize,
+    context.mapSeed,
+    threshold
+  );
 
   return (
     <div className="explore-window">
       <div className="explore-area-container">
         {mapElements.map((rowElements, rowIndex) => (
-          <div key={rowIndex} className="explore-area-row">
+          <div key={`row_${rowIndex}`} className="explore-area-row">
             {rowElements}
           </div>
         ))}
